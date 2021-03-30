@@ -24,15 +24,13 @@ const checkForSpots = async () => {
     if (features.length) {
         execFile(process.platform === 'darwin' ? 'afplay' : 'aplay', ['horn.wav'])
         console.log(`\nFound ${features.length} vaccine appointment(s) in:`)
-        features.forEach(({properties}) => {
+        features.forEach(({properties, distance}) => {
             open(properties.url)
-            console.log(`• ${properties.provider_brand_name} in ${properties.city} / ${properties.name} ${properties.postal_code}`)
+            console.log(`• ${properties.provider_brand_name} in ${properties.city} / ${properties.name} ${properties.postal_code} (${parseFloat(distance).toFixed(2)} mi.)`)
             SEEN_FEATURES.push(properties.id)
         })
-        // console.log(JSON.stringify(features, null, 2))
-    } else {
-        setTimeout(checkForSpots, 10000)
-    }
+    } 
+    setTimeout(checkForSpots, 10000)
 }
 
 checkForSpots()
