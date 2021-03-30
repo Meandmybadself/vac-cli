@@ -17,7 +17,11 @@ const checkForSpots = async () => {
     .map(feature => ({...feature, distance: haversine(MY_LOCATION, { latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0] }, {unit: 'mile'})}))
     .filter(feature => feature.distance < 20)
     if (features.length) {
-        execFile('afplay', ['horn.mp3'])
+	if (process.platform == 'darwin') {
+            execFile('afplay', ['horn.mp3'])
+	} else {
+            execFile('aplay', ['horn.wav'])
+	}
         console.log(JSON.stringify(features, null, 2))
     } else {
         setTimeout(checkForSpots, 10000)
