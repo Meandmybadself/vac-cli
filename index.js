@@ -30,9 +30,7 @@ const checkForSpots = async () => {
 
     // Added location count in case you don't actually have locations near you
     const locationCount = features.length
-
     const apptAvail = features.filter(({properties}) => properties.appointments_available)
-    //.filter(feature => !SEEN_FEATURES.includes(feature.properties.id))
 
     console.clear()
     console.log(`Last check: ${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`)
