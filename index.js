@@ -20,7 +20,7 @@ const MY_LOCATION = {
 }
 
 // Features we've already seen. In-memory store.
-const SEEN_FEATURES = []
+let lastResults = ''
 
 const checkForSpots = async () => {
     const {data} = await axios.get(`https://www.vaccinespotter.org/api/v0/states/${MY_LOCATION.state}.json`)
@@ -32,24 +32,31 @@ const checkForSpots = async () => {
     const locationCount = features.length
 
     const apptAvail = features.filter(({properties}) => properties.appointments_available)
-    .filter(feature => !SEEN_FEATURES.includes(feature.properties.id))
+    //.filter(feature => !SEEN_FEATURES.includes(feature.properties.id))
 
     console.clear()
     console.log(`Last check: ${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`)
-    console.log(`${locationCount} location(s) found within ${MY_LOCATION.distance} mile(s): ${apptAvail.length} appointment(s) available`)
+    console.log(`${locationCount} location(s) found within ${MY_LOCATION.distance} mile(s): ${apptAvail.length} appointment(s) available\n`)
 
     if (apptAvail.length) {
-        execFile(process.platform === 'darwin' ? 'afplay' : 'aplay', ['horn.wav'])
-
         apptAvail.forEach(({properties}) => {
             console.log(`• ${properties.provider_brand_name} in ${properties.city} / ${properties.name} ${properties.postal_code} / ${properties.url}`)
-            SEEN_FEATURES.push(properties.id)
+            // SEEN_FEATURES.push(properties.id)
         })
 
+    } 
+
+    const newResults = JSON.stringify(apptAvail)
+    if(newResults !== lastResults) {
+        execFile(process.platform === 'darwin' ? 'afplay' : 'aplay', ['horn.wav'])
     } else {
-        console.log(`Checking again in 10 seconds...`)
-        setTimeout(checkForSpots, 10000)
+        console.log(`\nNo location updates.`)
     }
+
+    lastResults = newResults
+    
+    console.log(`\nChecking again in 10 seconds...`)
+    setTimeout(checkForSpots, 10000)
 
 }
 
