@@ -9,9 +9,9 @@ Polls Vaccine finder endpoints every 30 seconds.
 
 1. Ensure volume is turned up.
 2. Clone project `git clone https://github.com/Meandmybadself/vac-cli.git`
-3. Edit latitude & longitude in index.js to match your location.
-4. Install dependencies `npm i`
-5. Run script `node index.js`
+3. Install dependencies `npm i`
+4. Get your latitude and longitude from https://www.gps-coordinates.net/
+5. Run script `node index.js --latlong [your latitude],[your longitude] --state [your state abbreviation] --dist [distance to check in miles]`
 
 Script will play a horn sound on macOS and Linux/BSD when a vaccine appointment is available.
 
