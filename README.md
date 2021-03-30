@@ -3,7 +3,6 @@ Polls Vaccine finder endpoints every 30 seconds.
 
 ## Requirements
 
-* macOS
 * Node.js 14+
 
 ## Installation
@@ -14,5 +13,5 @@ Polls Vaccine finder endpoints every 30 seconds.
 4. Install dependencies `npm i`
 5. Run script `node index.js`
 
-Script will play a horn sound when a vaccine appointment is available.
+Script will play a horn sound on macOS and Linux/BSD when a vaccine appointment is available.
 
