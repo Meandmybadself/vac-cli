@@ -29,10 +29,8 @@ const checkForSpots = async () => {
             console.log(`• ${properties.provider_brand_name} in ${properties.city} / ${properties.name} ${properties.postal_code}`)
             SEEN_FEATURES.push(properties.id)
         })
-        // console.log(JSON.stringify(features, null, 2))
-    } else {
-        setTimeout(checkForSpots, 10000)
-    }
+    } 
+    setTimeout(checkForSpots, 10000)
 }
 
 checkForSpots()
