@@ -9,7 +9,6 @@ const argv = yargs(process.argv.slice(2))
     .demandOption(['latlong', 'state' ])
     .argv
 
-
 const latLong = argv.latlong.split(',')
 
 // https://www.gps-coordinates.net/
@@ -20,35 +19,38 @@ const MY_LOCATION = {
     distance: argv.dist || 20
 }
 
+// Features we've already seen. In-memory store.
+const SEEN_FEATURES = []
+
 const checkForSpots = async () => {
     const {data} = await axios.get(`https://www.vaccinespotter.org/api/v0/states/${MY_LOCATION.state}.json`)
     const features = data.features
     .map(feature => ({...feature, distance: haversine(MY_LOCATION, { latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0] }, {unit: 'mile'})}))
     .filter(feature => feature.distance < MY_LOCATION.distance)
 
+    // Added location count in case you don't actually have locations near you
     const locationCount = features.length
 
     const apptAvail = features.filter(({properties}) => properties.appointments_available)
+    .filter(feature => !SEEN_FEATURES.includes(feature.properties.id))
 
     console.clear()
     console.log(`Last check: ${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`)
     console.log(`${locationCount} location(s) found within ${MY_LOCATION.distance} mile(s): ${apptAvail.length} appointment(s) available`)
 
     if (apptAvail.length) {
-        if (process.platform == 'darwin') {
-            execFile('afplay', ['horn.mp3'])
-        } else {
-            execFile('aplay', ['horn.wav'])
-        }
+        execFile(process.platform === 'darwin' ? 'afplay' : 'aplay', ['horn.wav'])
 
-        apptAvail.forEach((appt) => {
-            console.log(JSON.stringify(appt.properties, null, 2))
+        apptAvail.forEach(({properties}) => {
+            console.log(`• ${properties.provider_brand_name} in ${properties.city} / ${properties.name} ${properties.postal_code} / ${properties.url}`)
+            SEEN_FEATURES.push(properties.id)
         })
 
     } else {
         console.log(`Checking again in 10 seconds...`)
         setTimeout(checkForSpots, 10000)
     }
+
 }
 
 checkForSpots()
